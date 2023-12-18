@@ -80,7 +80,7 @@ class Runner
 
                 if (array_key_exists('entityListeners', $yamlEntity)) {
                     $attributes = [];
-                    $attributes[] = $yamlEntity['entityListeners'];
+                    $attributes[] = array_keys($yamlEntity['entityListeners']);
 
                     $class->addAttribute('Doctrine\ORM\Mapping\EntityListeners', $attributes);
 
