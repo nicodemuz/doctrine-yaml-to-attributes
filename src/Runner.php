@@ -479,9 +479,20 @@ class Runner
     private function handleIndex(ClassType $class, int|string $key, array $field): void
     {
         $attributes = [
+            'columns' => $field['columns'],
             'name' => $key,
-            'columns' => $field['columns']
         ];
+
+        if (array_key_exists('flags', $field)) {
+            $flags = $field['flags'];
+
+            if (is_string($flags)) {
+                $flags = [$flags];
+            }
+
+            $attributes['flags'] = $flags;
+            unset($field['flags']);
+        }
 
         unset($field['columns']);
 
