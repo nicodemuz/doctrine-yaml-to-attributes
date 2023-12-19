@@ -148,6 +148,13 @@ class Runner
                     unset($yamlEntity['oneToMany']);
                 }
 
+                if (array_key_exists('manyToMany', $yamlEntity)) {
+                    foreach ($yamlEntity['manyToMany'] as $key => $field) {
+                        $this->handleManyToMany($phpFile, $class, $key, $field);
+                    }
+                    unset($yamlEntity['manyToMany']);
+                }
+
                 if (array_key_exists('gedmo', $yamlEntity)) {
                     if (array_key_exists('soft_deleteable', $yamlEntity['gedmo'])) {
                         $attributes = [
@@ -411,6 +418,55 @@ class Runner
             }
 
             $property->addAttribute('Doctrine\ORM\Mapping\OneToMany', $attributes);
+        }
+    }
+
+    public function handleManyToMany(PhpFile $phpFile, ClassType $class, int|string $key, array $field): void
+    {
+        if ($class->hasProperty($key)) {
+            $property = $class->getProperty($key);
+
+            $attributes = [];
+
+            if (isset($field['mappedBy'])) {
+                $attributes['mappedBy'] = $field['mappedBy'];
+                unset($field['mappedBy']);
+            }
+
+            if (isset($field['inversedBy'])) {
+                $attributes['inversedBy'] = $field['inversedBy'];
+                unset($field['inversedBy']);
+            }
+
+            if (isset($field['targetEntity'])) {
+                $attributes['targetEntity'] = new Literal($field['targetEntity'] . '::class');
+                unset($field['targetEntity']);
+            }
+
+            if (isset($field['cascade'])) {
+                $attributes['cascade'] = $field['cascade'];
+                unset($field['cascade']);
+            }
+
+            if (isset($field['fetch'])) {
+                $attributes['fetch'] = $field['fetch'];
+                unset($field['fetch']);
+            }
+
+            if (isset($field['joinTable'])) {
+                $joinTableAttributes = $field['joinTable'];
+                unset($field['joinTable']);
+            }
+
+            if (sizeof($field) > 0) {
+                dump('Unsupported ManyToMany key: ', $field); die;
+            }
+
+            $property->addAttribute('Doctrine\ORM\Mapping\ManyToMany', $attributes);
+
+            if (isset($joinTableAttributes)) {
+                $property->addAttribute('Doctrine\ORM\Mapping\JoinTable', $joinTableAttributes);
+            }
         }
     }
 
