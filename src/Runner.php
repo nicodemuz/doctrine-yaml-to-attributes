@@ -155,8 +155,11 @@ class Runner
                             'timeAware' => $yamlEntity['gedmo']['soft_deleteable']['time_aware'],
                         ];
                         $class->addAttribute('Gedmo\Mapping\Annotation\SoftDeleteable', $attributes);
+                        unset($yamlEntity['gedmo']['soft_deleteable']);
                     }
-                    unset($yamlEntity['gedmo']);
+                    if (sizeof($yamlEntity['gedmo']) === 0) {
+                        unset($yamlEntity['gedmo']);
+                    }
                 }
 
                 if (sizeof($yamlEntity) > 0) {
@@ -249,6 +252,11 @@ class Runner
                 unset($field['scale']);
             }
 
+            if (isset($field['precision'])) {
+                $columnAttributes['precision'] = $field['precision'];
+                unset($field['precision']);
+            }
+
             if (isset($field['unique'])) {
                 $columnAttributes['unique'] = $field['unique'];
                 unset($field['unique']);
@@ -262,6 +270,12 @@ class Runner
             if (isset($field['options'])) {
                 $columnAttributes['options'] = $field['options'];
                 unset($field['options']);
+            }
+
+            if (isset($field['gedmo']['timestampable'])) {
+                $timestampableAttributes = $field['gedmo']['timestampable'];
+                $property->addAttribute('Gedmo\Mapping\Annotation\Timestampable', $timestampableAttributes);
+                unset($field['gedmo']);
             }
 
             if (sizeof($field) > 0) {
