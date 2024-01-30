@@ -24,7 +24,7 @@ class Runner
         $finder
             ->in($this->yamlFilesDir)
             ->files()
-            ->name('*.orm.yml')
+            ->name(['*.orm.yml', '*.orm.yaml'])
         ;
 
         foreach ($finder as $file) {
@@ -254,14 +254,14 @@ class Runner
                 unset($field['length']);
             }
 
-            if (isset($field['scale'])) {
-                $columnAttributes['scale'] = $field['scale'];
-                unset($field['scale']);
-            }
-
             if (isset($field['precision'])) {
                 $columnAttributes['precision'] = $field['precision'];
                 unset($field['precision']);
+            }
+
+            if (isset($field['scale'])) {
+                $columnAttributes['scale'] = $field['scale'];
+                unset($field['scale']);
             }
 
             if (isset($field['unique'])) {
@@ -428,6 +428,11 @@ class Runner
 
             $attributes = [];
 
+            if (isset($field['targetEntity'])) {
+                $attributes['targetEntity'] = new Literal($field['targetEntity'] . '::class');
+                unset($field['targetEntity']);
+            }
+
             if (isset($field['mappedBy'])) {
                 $attributes['mappedBy'] = $field['mappedBy'];
                 unset($field['mappedBy']);
@@ -436,11 +441,6 @@ class Runner
             if (isset($field['inversedBy'])) {
                 $attributes['inversedBy'] = $field['inversedBy'];
                 unset($field['inversedBy']);
-            }
-
-            if (isset($field['targetEntity'])) {
-                $attributes['targetEntity'] = new Literal($field['targetEntity'] . '::class');
-                unset($field['targetEntity']);
             }
 
             if (isset($field['cascade'])) {
@@ -524,6 +524,8 @@ class Runner
             case 'time_immutable':
                 return 'TIME_IMMUTABLE';
             case 'uuid':
+                return null;
+            case 'phone_number':
                 return null;
         }
 
