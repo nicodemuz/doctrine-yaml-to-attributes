@@ -5,7 +5,7 @@ use Nicodemuz\DoctrineYamlToAttributes\Runner;
 require 'vendor/autoload.php';
 
 $runner = new Runner(
-    yamlFilesDir: '/home/nico/Projects/lms-platform/symfony/config/doctrine',
-    doctrineEntityDir: '/home/nico/Projects/lms-platform/symfony/src/Entity',
+    yamlFilesDir: '/path/to/symfony/config/doctrine',
+    doctrineEntityDir: '/path/to/symfony/src/Entity',
 );
 $runner->run();
